@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+    <!-- 数据库驱动:选择你的本地硬盘上面的数据库驱动包-->
+    <!--<classPathEntry  location="C:\\Users\\yskjg\\.m2\\repository\\mysql\\mysql-connector-java\\5.1.21\\mysql-connector-java-5.1.21.jar"/>-->
+    <!--<classPathEntry  location="C:\Users\yskjg\.m2\repository\mysql\mysql-connector-java\5.1.21\mysql-connector-java-5.1.21.jar"/>-->
+    <!--<classPathEntry  location="c:\\Users\\wootion\\.m2\\repository\\mysql\\mysql-connector-java\\5.1.35\\mysql-connector-java-5.1.35.jar"/>-->
+    <classPathEntry  location="/home/zhoufei/.m2/repository/mysql/mysql-connector-java/5.1.21/mysql-connector-java-5.1.21.jar"/>
+    <context id="DB2Tables"  targetRuntime="MyBatis3">
+        <commentGenerator>
+            <property name="suppressDate" value="true"/>
+            <!-- 是否去除自动生成的注释 true：是 ： false:否 -->
+            <property name="suppressAllComments" value="true"/>
+        </commentGenerator>
+        <!--数据库链接URL，用户名、密码 -->
+        <!--<jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://10.130.45.223/ros" userId="ros" password="ros">
+        </jdbcConnection>
+        -->
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://localhost/ros" userId="ros" password="ros">
+        </jdbcConnection>
+        <javaTypeResolver>
+            <property name="forceBigDecimals" value="false"/>
+        </javaTypeResolver>
+        <!-- 生成模型的包名和位置-->
+        <javaModelGenerator targetPackage="com.wootion.model" targetProject="src/main/java">
+            <property name="enableSubPackages" value="true"/>
+            <property name="trimStrings" value="true"/>
+        </javaModelGenerator>
+
+        <!-- 生成映射文件的包名和位置-->
+        <sqlMapGenerator targetPackage="mapping" targetProject="src/main/resources">
+            <property name="enableSubPackages" value="true"/>
+        </sqlMapGenerator>
+        <!-- 生成DAO的包名和位置-->
+        <!--<javaClientGenerator type="XMLMAPPER" targetPackage="com.wootion.mapper" targetProject="src/main/java">-->
+            <!--<property name="enableSubPackages" value="true"/>-->
+        <!--</javaClientGenerator>-->
+        <!-- 要生成的表 tableName是数据库中的表名或视图名 domainObjectName是实体类名-->
+        <!--<table tableName="user_info" domainObjectName="User" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">-->
+            <!--<generatedKey column="uid" sqlStatement="select replace(uuid(), '-', '')"></generatedKey>-->
+        <!--</table>-->
+        <!--<table tableName="role" domainObjectName="Role" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">-->
+            <!--<generatedKey column="uid" sqlStatement="select replace(uuid(), '-', '')"></generatedKey>-->
+        <!--</table>-->
+        <!--<table tableName="resource" domainObjectName="Resource" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="uid" sqlStatement="select replace(uuid(), '-', '')"></generatedKey>
+        </table>-->
+        <!--<table tableName="role_right" domainObjectName="RoleRight" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">-->
+            <!--<generatedKey column="uid" sqlStatement="select replace(uuid(), '-', '')"></generatedKey>-->
+        <!--</table>-->
+        <!--<table tableName="user_role" domainObjectName="UserRole" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">-->
+            <!--<generatedKey column="uid" sqlStatement="select replace(uuid(), '-', '')"></generatedKey>-->
+        <!--</table>-->
+
+        <!--
+      <table tableName="alarm_log" domainObjectName="AlarmLog" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+           <generatedKey column="uid" sqlStatement="select replace(uuid(), '-', '')"></generatedKey>
+       </table>-->
+
+
+        <!--<table tableName="alarm_sub" domainObjectName="AlarmSub" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">-->
+            <!--<generatedKey column="uid" sqlStatement="select replace(uuid(), '-', '')"></generatedKey>-->
+        <!--</table>-->
+       <!-- <table tableName="dev" domainObjectName="Dev" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="uid" sqlStatement="select getTableId('dev')"></generatedKey>
+        </table>-->
+        <!--<table tableName="dev_type" domainObjectName="DevType" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="uid" sqlStatement="select replace(uuid(), '-', '')"></generatedKey>
+        </table>-->
+       <!-- <table tableName="map_icon" domainObjectName="MapIcon" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">&ndash;&gt;
+            <generatedKey column="uid" sqlStatement="select replace(uuid(), '-', '')"></generatedKey>
+        </table>-->
+   <!-- <table tableName="ptz_set" domainObjectName="PtzSet" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="uid" sqlStatement="select getTableId('ptz_set')"></generatedKey>
+        </table>-->
+     <!--    <table tableName="ptz_set_field" domainObjectName="PtzSetField" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+          <generatedKey column="uid" sqlStatement="select replace(uuid(), '-', '')"></generatedKey>
+        </table>-->
+      <!--  <table tableName="regz_spot" domainObjectName="RegzSpot" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="uid" sqlStatement="select getTableId('regz_spot')"></generatedKey>
+        </table>
+        <table tableName="regz_spot_group" domainObjectName="RegzSpotGroup" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="uid" sqlStatement="select replace(uuid(), '-', '')"></generatedKey>
+        </table>-->
+
+        <!--<table tableName="run_line" domainObjectName="RunLine" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">-->
+            <!--<generatedKey column="uid" sqlStatement="select getTableId('run_line')"></generatedKey>-->
+        <!--</table>-->
+        <!--<table tableName="run_mark" domainObjectName="RunMark" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="uid" sqlStatement="select getTableId('run_mark')"></generatedKey>
+        </table>-->
+        <!--<table tableName="site_user" domainObjectName="SiteUser" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">-->
+            <!--<generatedKey column="uid" sqlStatement="select replace(uuid(), '-', '')"></generatedKey>-->
+        <!--</table>-->
+
+       <!--<table tableName="task_exec" domainObjectName="TaskExec" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="uid" sqlStatement="select replace(uuid(), '-', '')"></generatedKey>
+        </table>-->
+          <table tableName="task_log" domainObjectName="TaskLog" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+               <generatedKey column="uid" sqlStatement="select replace(uuid(), '-', '')"></generatedKey>
+           </table>
+      <!-- <table tableName="task_result" domainObjectName="TaskResult" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="uid" sqlStatement="select replace(uuid(), '-', '')"></generatedKey>
+        </table>-->
+
+      <!-- <table tableName="task" domainObjectName="Task" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+               <generatedKey column="uid" sqlStatement="select concat('task',getTableId('task'))"></generatedKey>
+           </table>-->
+        <!--    <table tableName="task_ptz" domainObjectName="TaskPtz" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+               <generatedKey column="uid" sqlStatement="select replace(uuid(), '-', '')"></generatedKey>
+           </table>
+
+           <table tableName="task_period" domainObjectName="TaskPeriod" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+               <generatedKey column="uid" sqlStatement="select replace(uuid(), '-', '')"></generatedKey>
+           </table>
+
+         <table tableName="task_plan" domainObjectName="Job" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+               <generatedKey column="uid" sqlStatement="select getTableId('task')"></generatedKey>
+           </table>-->
+        <!--
+        <table tableName="task_type" domainObjectName="TaskType" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="uid" sqlStatement="select replace(uuid(), '-', '')"></generatedKey>
+        </table>-->
+        <!--<table tableName="task_condition" domainObjectName="TaskCondition" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="uid" sqlStatement="select replace(uuid(), '-', '')"></generatedKey>
+        </table>-->
+        <!--
+        <table tableName="role_resource" domainObjectName="RoleResource" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="uid" sqlStatement="select replace(uuid(), '-', '')"></generatedKey>
+        </table>
+         -->
+     <!--  <table tableName="dict_type" domainObjectName="DictType" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="uid" sqlStatement="select replace(uuid(), '-', '')"></generatedKey>
+        </table>
+        <table tableName="dict" domainObjectName="Dict" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="uid" sqlStatement="select replace(uuid(), '-', '')"></generatedKey>
+        </table>-->
+<!--      <table tableName="alarm_msg" domainObjectName="AlarmMsg" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="uid" sqlStatement="select replace(uuid(), '-', '')"></generatedKey>
+        </table>-->
+     <!--   <table tableName="history_video" domainObjectName="HistoryVideo" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="uid" sqlStatement="select replace(uuid(), '-', '')"></generatedKey>
+        </table>-->
+    <!--  <table tableName="regz_object" domainObjectName="RegzObject" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="uid" sqlStatement="select replace(uuid(), '-', '')"></generatedKey>
+        </table>
+        <table tableName="regz_object_field" domainObjectName="RegzObjectField" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="uid" sqlStatement="select replace(uuid(), '-', '')"></generatedKey>
+        </table>-->
+        <!--<table tableName="maintain_area" domainObjectName="MaintainArea" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">-->
+           <!--<generatedKey column="uid" sqlStatement="select replace(uuid(), '-', '')"></generatedKey>-->
+       <!--</table>-->
+       <!-- <table tableName="robot_event_log" domainObjectName="EventLog" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="uid" sqlStatement="select replace(uuid(), '-', '')"></generatedKey>
+        </table>-->
+
+
+    </context>
+</generatorConfiguration>

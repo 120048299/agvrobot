@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <environments default="development">
+        <environment id="development">
+            <transactionManager type="JDBC" />
+            <dataSource type="POOLED">
+                <property name="driver" value="com.mysql.jdbc.Driver" />
+                <property name="url" value="jdbc:mysql://10.130.40.10:3306/ros?useUnicode=true&amp;characterEncoding=utf8" />
+                <property name="username" value="ros" />
+                <property name="password" value="ros" />
+            </dataSource>
+        </environment>
+    </environments>
+    <mappers>
+        <mapper resource="mapping/DevMapper.xml"/>
+        <mapper resource="mapping/extend/DevMapperExtend.xml"/>
+
+        <mapper resource="mapping/RegzSpotMapper.xml"/>
+        <mapper resource="mapping/extend/RegzSpotMapperExtend.xml"/>
+        <mapper resource="mapping/PtzSetMapper.xml"/>
+        <mapper resource="mapping/extend/PtzSetMapperExtend.xml"/>
+
+    </mappers>
+</configuration>

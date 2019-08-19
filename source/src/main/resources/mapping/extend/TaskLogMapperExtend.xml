@@ -1,0 +1,571 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TaskLog">
+    <resultMap id="TaskLogMap" type="com.wootion.model.TaskLog">
+        <id column="uid" jdbcType="VARCHAR" property="uid" />
+        <result column="task_exec_id" jdbcType="VARCHAR" property="taskExecId" />
+        <result column="img_file" jdbcType="VARCHAR" property="imgFile" />
+        <result column="ptz_set_id" jdbcType="VARCHAR" property="ptzSetId" />
+        <result column="regz_spot_id" jdbcType="VARCHAR" property="regzSpotId" />
+        <result column="regz_object_id" jdbcType="VARCHAR" property="regzObjectId" />
+        <result column="dev_id" jdbcType="VARCHAR" property="devId" />
+        <result column="infrared_file" jdbcType="VARCHAR" property="infraredFile" />
+        <result column="audio_file" jdbcType="VARCHAR" property="audioFile" />
+        <result column="video_file" jdbcType="VARCHAR" property="videoFile" />
+        <result column="foreign_file" jdbcType="VARCHAR" property="foreignFile" />
+        <result column="robot_id" jdbcType="VARCHAR" property="robotId" />
+        <result column="begin_time" jdbcType="TIMESTAMP" property="beginTime" />
+        <result column="finish_time" jdbcType="TIMESTAMP" property="finishTime" />
+        <result column="weather_temp" jdbcType="REAL" property="weatherTemp" />
+        <result column="weather_hum" jdbcType="REAL" property="weatherHum" />
+        <result column="weather_rain_fall" jdbcType="REAL" property="weatherRainFall" />
+        <result column="weather_wind_speed" jdbcType="REAL" property="weatherWindSpeed" />
+        <result column="audit_status" jdbcType="INTEGER" property="auditStatus" />
+        <result column="audit_regz_error" jdbcType="INTEGER" property="auditRegzError" />
+        <result column="audit_regz_abnormal" jdbcType="INTEGER" property="auditRegzAbnormal" />
+        <result column="audit_regz_abnormal_id" jdbcType="VARCHAR" property="auditRegzAbnormalId" />
+        <result column="audit_time" jdbcType="TIMESTAMP" property="auditTime" />
+        <result column="audit_user_id" jdbcType="VARCHAR" property="auditUserId" />
+        <result column="audit_memo" jdbcType="VARCHAR" property="auditMemo" />
+        <result column="site_id" jdbcType="VARCHAR" property="siteId" />
+        <result column="exec_fail_reason" jdbcType="INTEGER" property="execFailReason" />
+        <result column="exec_fail_memo" jdbcType="VARCHAR" property="execFailMemo" />
+        <result column="status" jdbcType="INTEGER" property="status" />
+    </resultMap>
+
+    <select id="selectTaskLogByPlanIdAndPtzSetId" resultMap="TaskLogMap" >
+        select log.*, exec.status
+        from task_log log, task_exec exec
+        where exec.task_plan_id=#{taskPlanId} and exec.ptz_set_id=#{ptzSetId}
+        and log.task_exec_id=exec.uid
+        and exec.status in(2,3,4,7);
+    </select>
+
+    <!-- 查询上一次任务日志 -->
+    <select id="selectLastTaskLogByPtzSetId" resultMap="BaseResultMap"  >
+        select *
+        from task_log
+        where ptz_set_id=#{ptzSetId}
+        and begin_time>#{beginTime}
+        order by begin_time desc
+        LIMIT 1;
+    </select>
+
+    <!-- 查询任务结果 -->
+    <select id="selectTaskResultByPlanIdAndPtzSetId" resultType="java.util.HashMap" >
+        select result.*
+        from task_result result, task_exec exec
+        where exec.task_plan_id=#{taskPlanId} and exec.ptz_set_id=#{ptzSetId}
+        and result.task_exec_id=exec.uid;
+    </select>
+
+    <!--<select id="selectAll" resultType="java.util.HashMap">
+        SELECT
+        task_log.uid AS uid,
+        task_log.result AS result,
+        regz_spot.ops_type AS opsType,
+        task_log.auditStatus AS auditStatus,
+        regz_spot.spot_name AS spotName,
+        dev.name AS devName,
+        task_log.time AS regzTime
+        FROM task_log, task_exec, ptz_set,regz_spot,dev
+        WHERE task_exec.uid = task_log.uid
+         AND ptz_set.uid = task_exec.ptz_set_id 
+         AND regz_spot.uid = ptz_set.regz_spot_id
+         AND ptz_set.dev_id = dev.uid
+    </select>
+-->
+
+
+    <!-- 巡检报告生成 按名字排序-->
+    <select id="selectTaskExecLogForPlanReport"  resultType="java.util.HashMap" >
+        select t1.* ,t2.uid as alarm_uid,t2.time , t2.status ,t2.alarm_code_id ,t2.alarm_level ,
+        t2.audit_alarm_code_id ,t2.is_new_alarm
+        from
+        (select log.*,exec.task_plan_id,ptz.order_num ptzOrderNum
+        from task_exec exec,task_log log,ptz_set ptz
+        where exec.task_plan_id=#{taskPlanId}
+        and log.task_exec_id=exec.uid and exec.ptz_set_id=ptz.uid
+        ) t1
+        left join alarm_log t2 on  t1.uid=t2.log_id order by t1.ptzOrderNum
+    </select>
+
+    <!-- 按点位、时间段、告警级别 查询任务结果列表 待审核 -->
+    <select id="selectTaskLogList" resultType="java.util.HashMap" >
+    <!--
+    select plan.name as planName,ptz.description , regz.ops_type as opsType,regz.save_type as saveType,ptz.uid as ptzSetId,
+    log.uid,log.task_exec_id as taskExecId,
+    log.img_file as imgFile,log.infrared_file as infraredFile,log.audio_file as audioFile,log.video_file as videoFile,
+    log.robot_id as robotId,log.begin_time as beginTime,log.finish_time finishTime,log.result,
+    log.alarm_code_id as alarmCodeId,log.alarm_level alarmLevel,log.audit_status as auditStatus,
+    log.audit_regz_error as auditRegzError,log.audit_regz_abnormal as auditRegzAbnormal,log.audit_regz_abnormal_id as auditRegzAbnormalId,
+    log.audit_time as auditTime,log.audit_user_id as auditUserId,log.audit_result as auditResult,
+    log.audit_alarm_code_id as auditAlarmCodeId,log.audit_alarm_level as auditAlarmLevel,log.audit_memo as auditMemo,
+    log.weather_temp as weatherTemp,log.weather_hum as weatherHum,
+    log.weather_rain_fall as weatherRainFall,log.weather_wind_speed as weatherWindSpeed
+    from ptz_set ptz ,task_exec exec,task_plan plan,task_log log,regz_spot regz
+    where ptz.site_id=#{siteId} and exec.site_id=#{siteId} and log.site_id=#{siteId}
+    and ptz.uid=exec.ptz_set_id  and exec.task_plan_id=plan.uid
+    and log.task_exec_id=exec.uid and ptz.regz_spot_id=regz.uid
+    and exec.status in (2,7)
+    and ptz.uid=#{ptzSetId}
+    -->
+        select t1.* ,t2.uid as alarm_uid,t2.time , t2.status ,t2.alarm_code_id ,t2.alarm_level ,
+        t2.audit_alarm_code_id ,t2.is_new_alarm
+        from task_log t1 left join alarm_log t2 on  t1.uid=t2.log_id
+        where 1=1
+        <if test="taskLogId != null" >
+            and t1.uid = #{taskLogId}
+        </if>
+        <if test="ptzSetId != null" >
+            and t1.ptz_set_id = #{ptzSetId}
+        </if>
+        <if test="fromDate != null" >
+            and t1.begin_time &gt;= #{fromDate}
+        </if>
+        <if test="toDate != null" >
+            and t1.begin_time &lt; #{toDate}
+        </if>
+        <if test="execFailReason != null and  execFailReason != -1" >
+            and t1.exec_fail_reason = #{execFailReason}
+        </if>
+        <if test="auditStatus != null and  auditStatus != -1" >
+            and t1.audit_status = #{auditStatus}
+        </if>
+        <if test="selectedTaskPlanId != null and  selectedTaskPlanId != '-1'" >
+            and t1.job_id= #{selectedTaskPlanId}
+        </if>
+        <if test="alarmLevel != null and alarmLevel != -1 and alarmLevel != 0" >
+            and t2.alarm_level = #{alarmLevel}
+        </if>
+        <if test="alarmLevel == 0" >
+            and t2.alarm_level is null
+        </if>
+        <if test="hasAlarm != null" >
+            and t2.alarm_level > 0
+        </if>
+        order by t1.begin_time desc
+</select>
+
+<!-- 结果对比分析页面：按多个点位，时间段，采集类型 查询任务结果  -->
+    <select id="selectTaskLogForAnalysis" resultType="java.util.HashMap" >
+        <!--
+         select ptz.description, spot.ops_type as opsType,spot.save_type as saveType,ptz.uid as ptzSetId,
+        log.uid logId,log.begin_time as beginTime,log.result,
+        log.img_file as imgFile,log.infrared_file as infraredFile,log.audio_file as audioFile,log.video_file as videoFile
+        from ptz_set ptz ,task_log log,regz_spot spot
+        where ptz.site_id=#{siteId} and log.site_id=#{siteId}
+        and ptz.regz_spot_id=spot.uid and ptz.uid=log.ptz_set_id
+        and log.exec_fail_reason=0
+        -->
+
+        select t1.* ,t2.uid as alarm_uid,t2.time , t2.status ,t2.alarm_code_id ,t2.alarm_level ,
+        t2.audit_alarm_code_id,t2.is_new_alarm
+        from
+        (
+            select log.*,exec.task_plan_id
+            from task_exec exec,task_log log
+            where  log.exec_fail_reason=0 and log.task_exec_id=exec.uid
+                <if test="ptzSetIds != null" >
+                    and log.ptz_set_id in
+                    <foreach collection="ptzSetIds" item="ptzSetId" index="index"
+                             open="(" close=")" separator=",">
+                        #{ptzSetId}
+                    </foreach>
+                </if>
+                <if test="saveType == 0" >
+                    and log.img_file is not null
+                </if>
+                <if test="saveType == 1" >
+                    and log.infrared_file is not null
+                </if>
+                <if test="saveType == 2" >
+                    and log.video_file is not null
+                </if>
+                <if test="saveType == 3" >
+                    and log.audio_file is not null
+                </if>
+
+                <if test="fromDate != null" >
+                    and log.begin_time &gt;= #{fromDate}
+                </if>
+                <if test="toDate != null" >
+                    and log.begin_time &lt; #{toDate}
+                </if>
+        ) t1
+        left join alarm_log t2 on  t1.uid=t2.log_id
+        order by t1.begin_time desc
+    </select>
+
+    <select id="selectTaskLogByExecId" resultMap="BaseResultMap" >
+        select * from task_log where task_exec_id=#{taskExecId}
+    </select>
+
+    <update id="confirmTaskLog" parameterType="java.lang.String" >
+        update task_log  log  set audit_status=2
+            where log.audit_status=1 and log.task_exec_id in
+            (select uid from task_exec where ptz_set_id =#{ptzSetId})
+    </update>
+
+
+    <delete id="deleteByDevId" parameterType="java.lang.String">
+        delete from alarm_log
+        where dev_id = #{devId}
+    </delete>
+
+    <select id="selectTaskLogWaitAudit" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select log.* from task_log log,task_exec  exec
+                 where log.task_exec_id=exec.uid and exec.task_plan_id=#{taskPlanId} and log.audit_status=0 and log.regz_spot_id is not null
+    </select>
+
+    <select id="selectTaskLogOfPlan" resultType="java.util.HashMap" parameterType="java.lang.String">
+        select log.* from task_log log,task_exec  exec
+        where log.task_exec_id=exec.uid and exec.task_plan_id=#{taskPlanId} and log.regz_spot_id is not null
+        order by log.begin_time
+    </select>
+
+    <select id="getTaskPlanLogAuditCount" resultType="java.util.HashMap" parameterType="java.lang.String">
+        select count(1) as totalNum,sum(audit_status) auditedNum from task_log log,task_exec  exec
+        where log.task_exec_id=exec.uid and exec.task_plan_id=#{taskPlanId} and log.regz_spot_id is not null
+    </select>
+
+
+    <select id="selectTaskLogByptsSetAndPlan" resultMap="BaseResultMap"  >
+        select *
+        from task_log where ptz_set_id=#{ptzSetId}
+        and task_exec_id in (select uid from task_exec where task_plan_id =#{taskPlanId})
+        LIMIT 1;
+    </select>
+
+    <!-- 报表生成：按多个点位，时间段，采集类型 查询任务结果 ,只查成功的 -->
+    <select id="selectTaskLogForReport" resultType="java.util.HashMap" >
+        <!--select log.*,-->
+        <!--ptz.description , spot.ops_type ,spot.meter_type,spot.dev_type_id as smallDevTypeId,alarm_log.alarm_level as alarm_level-->
+        <!--from task_log log , ptz_set ptz, regz_spot spot,alarm_log-->
+        <!--where log.exec_fail_reason=0 and log.regz_spot_id=spot.uid and log.ptz_set_id=ptz.uid-->
+        <!--and alarm_log.log_id=log.uid-->
+        <!--<if test="ptzSetIds != null" >-->
+            <!--and log.ptz_set_id in-->
+            <!--<foreach collection="ptzSetIds" item="ptzSetId" index="index"-->
+                     <!--open="(" close=")" separator=",">-->
+                <!--#{ptzSetId}-->
+            <!--</foreach>-->
+        <!--</if>-->
+        <!--<if test="saveState != null" >-->
+            <!--and log.audit_regz_abnormal = #{saveState}-->
+        <!--</if>-->
+        <!--<if test="fromDate != null" >-->
+            <!--and log.begin_time &gt;= #{fromDate}-->
+        <!--</if>-->
+
+        <!--<if test="toDate != null" >-->
+            <!--and log.begin_time &lt; #{toDate}-->
+        <!--</if>-->
+
+        <!--<if test="orderStyle == 0" >-->
+            <!--order by log.begin_time-->
+        <!--</if>-->
+        <!--<if test="orderStyle == 1" >-->
+            <!--order by log.begin_time desc-->
+        <!--</if>-->
+        <!--<if test="orderStyle == 2" >-->
+            <!--order by  description-->
+        <!--</if>-->
+        select t1.* ,t2.uid as alarm_uid,t2.time , t2.status ,t2.alarm_code_id ,t2.alarm_level ,t2.alarm_desc,
+        t2.audit_alarm_code_id
+        from
+        (
+        select log.*,exec.task_plan_id,ptz.description
+        from task_exec exec,task_log log, ptz_set ptz
+        where  log.exec_fail_reason=0 and log.task_exec_id=exec.uid and log.ptz_set_id=ptz.uid
+
+        <if test="ptzSetIds != null" >
+            and log.ptz_set_id in
+            <foreach collection="ptzSetIds" item="ptzSetId" index="index"
+                     open="(" close=")" separator=",">
+                #{ptzSetId}
+            </foreach>
+        </if>
+        <if test="saveState != null" >
+            and log.audit_regz_abnormal = #{saveState}
+        </if>
+        <if test="fromDate != null" >
+            and log.begin_time &gt;= #{fromDate}
+        </if>
+
+        <if test="toDate != null" >
+            and log.begin_time &lt; #{toDate}
+        </if>
+
+
+        ) t1
+        left join alarm_log t2 on  t1.uid=t2.log_id
+        <if test="orderStyle == 0" >
+            order by t1.begin_time
+        </if>
+        <if test="orderStyle == 1" >
+            order by t1.begin_time desc
+        </if>
+        <if test="orderStyle == 2" >
+            order by  t1.description
+        </if>
+    </select>
+    <!--<select id="selectTaskLogForDeviceAlarmReport" resultType="java.util.HashMap" >-->
+        <!--select plan.name as planName,ptz.description , regz.ops_type as ops_type,regz.save_type as saveType,ptz.uid as ptzSetId,regz.dev_type_id as smallDevTypeId,-->
+        <!--log.*-->
+        <!--from ptz_set ptz ,task_exec exec,task_plan plan,task_log log,regz_spot regz-->
+        <!--where ptz.site_id=#{siteId} and exec.site_id=#{siteId} and log.site_id=#{siteId}-->
+        <!--and ptz.uid=exec.ptz_set_id  and exec.task_plan_id=plan.uid-->
+        <!--and log.task_exec_id=exec.uid and ptz.regz_spot_id=regz.uid-->
+        <!--and exec.status =2-->
+        <!--and (-->
+        <!--<if test="opsTypes != null">-->
+            <!--regz.ops_type in-->
+            <!--<foreach collection="opsTypes" item="opsTypeid" index="index" open="(" separator="," close=")">-->
+                <!--#{opsTypeid}-->
+            <!--</foreach>-->
+        <!--</if>-->
+        <!--<if test="devTypeList != null" >-->
+            <!--and regz.dev_type_id in-->
+            <!--<foreach item="id" collection="devTypeList"  open="(" separator="," close=")">-->
+                <!--#{id}-->
+            <!--</foreach>-->
+        <!--</if>-->
+        <!--<if test="alarmLevels != null" >-->
+            <!--and log.alarm_level in-->
+            <!--<foreach collection="alarmLevels" item="alarmLevelId" index="index" open="(" close=")" separator=",">-->
+                <!--#{alarmLevelId}-->
+            <!--</foreach>-->
+        <!--</if>-->
+        <!--&lt;!&ndash;<if test="saveState != null" >&ndash;&gt;-->
+            <!--&lt;!&ndash;and log.audit_regz_abnormal = #{saveState}&ndash;&gt;-->
+        <!--&lt;!&ndash;</if>&ndash;&gt;-->
+        <!--<if test="fromDate != null" >-->
+            <!--and log.begin_time &gt;= #{fromDate}-->
+        <!--</if>-->
+        <!--<if test="toDate != null" >-->
+            <!--and log.begin_time &lt; #{toDate}-->
+        <!--</if>-->
+        <!--)-->
+        <!--<if test="ptzSetIds != null " >-->
+        <!--or log.ptz_set_id in-->
+        <!--<foreach collection="ptzSetIds" item="ptzSetId" index="index" open="(" close=")" separator=",">-->
+        <!--#{ptzSetId}-->
+        <!--</foreach>-->
+
+        <!--</if>-->
+
+    <!--</select>-->
+    <select id="selectTaskLogForDeviceAlarmReport" resultType="java.util.HashMap" >
+        <!--select t1.*,t2.uid as alarm_uid,t2.time , t2.status ,t2.alarm_code_id ,t2.alarm_level ,-->
+        <!--t2.audit_alarm_code_id ,t2.is_new_alarm from-->
+        <!--(select log.*,exec.task_plan_id, regz.dev_type_id as smallDevTypeId from task_exec exec,task_log log,ptz_set ptz,regz_spot regz-->
+        <!--where ptz.site_id=#{siteId} and exec.site_id=#{siteId} and log.site_id=#{siteId}-->
+        <!--and ptz.uid=exec.ptz_set_id  and log.task_exec_id=exec.uid and ptz.regz_spot_id=regz.uid-->
+        <!--and exec.status =2-->
+        <!--<if test="fromDate != null" >-->
+            <!--and log.begin_time &gt;= #{fromDate}-->
+        <!--</if>-->
+        <!--<if test="ptzSetIds != null || ptzSetIds.size>0">-->
+            <!--and  log.ptz_set_id in-->
+        <!--<foreach collection="ptzSetIds" item="ptzSetId" index="index" open="(" close=")" separator=",">-->
+            <!--#{ptzSetId}-->
+        <!--</foreach>-->
+        <!--</if>-->
+        <!--<if test="opsTypes != null and opsTypes.size()>0">-->
+            <!--and regz.ops_type in-->
+            <!--<foreach collection="opsTypes" item="opsTypeid" index="index" open="(" separator="," close=")">-->
+                <!--#{opsTypeid}-->
+            <!--</foreach>-->
+        <!--</if>-->
+        <!--<if test="devTypeList != null and devTypeList.size()>0" >-->
+            <!--and regz.dev_type_id in-->
+            <!--<foreach item="id" collection="devTypeList"  open="(" separator="," close=")">-->
+                <!--#{id}-->
+            <!--</foreach>-->
+        <!--</if>-->
+        <!--<if test="toDate != null" >-->
+            <!--and log.begin_time &lt; #{toDate}-->
+        <!--</if>-->
+        <!--) t1-->
+        <!--left join alarm_log t2 on  t1.uid=t2.log_id-->
+        <!--<if test="alarmLevels != null and alarmLevels.size()>0" >-->
+            <!--where t2.alarm_level in-->
+            <!--<foreach collection="alarmLevels" item="alarmLevelId" index="index" open="(" close=")" separator=",">-->
+                <!--#{alarmLevelId}-->
+            <!--</foreach>-->
+        <!--</if>-->
+        <choose>
+            <when test="ptzSetIds != null and ptzSetIds.size>0">
+                select * from
+                (
+                select t1.*,t2.uid as alarm_uid,t2.time , t2.status ,t2.alarm_code_id ,IFNULL(t2.alarm_level,0) as
+                alarm_level ,
+                t2.audit_alarm_code_id ,t2.is_new_alarm from
+                (select log.*,exec.task_plan_id, regz.dev_type_id as smallDevTypeId from task_exec exec,task_log log,ptz_set ptz,regz_spot regz
+                where ptz.site_id=#{siteId} and exec.site_id=#{siteId} and log.site_id=#{siteId}
+                and ptz.uid=exec.ptz_set_id  and log.task_exec_id=exec.uid and ptz.regz_spot_id=regz.uid
+                and exec.status =2
+                and log.begin_time &gt;= #{fromDate} and log.begin_time &lt; #{toDate}
+                and  log.ptz_set_id in
+                <foreach collection="ptzSetIds" item="ptzSetId" index="index" open="(" close=")" separator=",">
+                    #{ptzSetId}
+                </foreach>
+                ) t1
+                left join alarm_log t2 on  t1.uid=t2.log_id
+                ) as t3
+                <if test="alarmLevels != null and alarmLevels.size()>0" >
+                where t3.alarm_level in
+                <foreach collection="alarmLevels" item="alarmLevelId" index="index" open="(" close=")" separator=",">
+                    #{alarmLevelId}
+                </foreach>
+                </if>
+            </when>
+            <otherwise>
+                select * from
+                (
+                select t1.*,t2.uid as alarm_uid,t2.time , t2.status ,t2.alarm_code_id ,IFNULL(t2.alarm_level,0) as
+                alarm_level ,
+                t2.audit_alarm_code_id ,t2.is_new_alarm from
+                (select log.*,exec.task_plan_id, regz.dev_type_id as smallDevTypeId from task_exec exec,task_log
+                log,ptz_set ptz,regz_spot regz
+                where ptz.site_id=#{siteId} and exec.site_id=#{siteId} and log.site_id=#{siteId}
+                and ptz.uid=exec.ptz_set_id and log.task_exec_id=exec.uid and ptz.regz_spot_id=regz.uid
+                and exec.status =2
+                <if test="fromDate != null" >
+                and log.begin_time &gt;= #{fromDate}
+                </if>
+                <if test="opsTypes != null and opsTypes.size()>0">
+                and regz.ops_type in
+                <foreach collection="opsTypes" item="opsTypeid" index="index" open="(" separator="," close=")">
+                #{opsTypeid}
+                </foreach>
+                </if>
+                <if test="devTypeList != null and devTypeList.size()>0" >
+                and regz.dev_type_id in
+                <foreach item="id" collection="devTypeList"  open="(" separator="," close=")">
+                #{id}
+                </foreach>
+                </if>
+                <if test="toDate != null" >
+                and log.begin_time &lt; #{toDate}
+                </if>
+                ) t1
+                left join alarm_log t2 on t1.uid=t2.log_id
+                ) as t3
+                <if test="alarmLevels != null and alarmLevels.size()>0" >
+                     where t3.alarm_level in
+                <foreach collection="alarmLevels" item="alarmLevelId" index="index" open="(" close=")" separator=",">
+                    #{alarmLevelId}
+                </foreach>
+            </if>
+            </otherwise>
+        </choose>
+
+    </select>
+
+    <select id="selectTaskLogListForDeviceAlarmForSuperUser" resultType="java.util.HashMap" >
+        select plan.audit_status,plan.uid,plan.name,plan.status,plan.plan_start_time,plan.plan_end_time,
+        T1.TotalCount,T2.alarmCount,(T1.TotalCount-T3.normallCount) as unnormallCount from
+        task_plan plan,
+        ( select  plan.uid,sum(1) totalCount
+           from task_plan plan,task_ptz taskptz
+           where taskptz.task_id=plan.task_id
+           group by plan.uid) as T1
+          left join
+        ( select t3.uid,count( t3.alarm_level) as alarmCount from
+		( select t1.uid,t2.log_id, IFNULL(t2.alarm_level,0) as alarm_level from
+        ( select plan.uid,log.uid as loguid from
+        task_plan plan,task_exec exec,task_log log
+         where exec.task_plan_id=plan.uid and log.task_exec_id=exec.uid ) as t1
+         left join alarm_log t2
+         on t1.loguid=t2.log_id) as t3
+         where t3.alarm_level>0
+         group by t3.uid ) as T2
+        on T1.uid =T2.uid
+        left join
+        (select plan.uid,count(exec.ptz_set_id) as normallCount
+        from task_plan plan,task_exec exec where exec.task_plan_id=plan.uid
+        group by plan.uid) as T3
+        on T2.uid =T3.uid
+        where plan.uid=T1.uid and plan.uid=T2.uid and plan.uid=T3.uid
+        and plan.status in (2)
+        and plan.site_id=#{siteId}
+        order by plan_start_time
+
+    </select>
+
+    <update id="updateByIds" parameterType="java.lang.String">
+        update task_plan plan
+        left join task_exec exec
+        on exec.task_plan_id=plan.uid
+        left join task_log log
+        on log.task_exec_id=exec.uid
+        left join alarm_log
+        on alarm_log.log_id=log.uid
+        set plan.audit_status=1,
+        log.audit_status=1,
+        alarm_log.alarm_level=0
+        where plan.uid IN
+        <foreach item="idList" collection="list"  open="(" separator="," close=")">
+            #{idList}
+        </foreach>
+    </update>
+
+    <update id="updateTaskLogAndAlarm" parameterType="java.util.Map">
+    update task_plan plan
+    left join task_exec exec
+    on exec.task_plan_id=plan.uid
+    left join task_log log
+    on log.task_exec_id=exec.uid
+    left join alarm_log
+    on alarm_log.log_id=log.uid
+    set plan.audit_status=1,
+        log.audit_user_id=#{reviewer},
+    log.audit_status=1,
+    alarm_log.alarm_level=0
+    where log.uid IN
+    <foreach item="idList" collection="idList"   open="(" separator="," close=")">
+        #{idList}
+    </foreach>
+    </update>
+
+
+    <!-- 按点位和时间段查询任务结果 待审核 -->
+    <select id="selectTaskLogByPtzId" resultType="java.util.HashMap" >
+        <!--
+        select plan.name as planName,ptz.description , regz.ops_type as opsType,regz.save_type as saveType,ptz.uid as ptzSetId,
+        log.uid,log.task_exec_id as taskExecId,
+        log.img_file as imgFile,log.infrared_file as infraredFile,log.audio_file as audioFile,log.video_file as videoFile,
+        log.robot_id as robotId,log.begin_time as beginTime,log.finish_time finishTime,log.result,
+        log.alarm_code_id as alarmCodeId,log.alarm_level alarmLevel,log.audit_status as auditStatus,
+        log.audit_regz_error as auditRegzError,log.audit_regz_abnormal as auditRegzAbnormal,log.audit_regz_abnormal_id as auditRegzAbnormalId,
+        log.audit_time as auditTime,log.audit_user_id as auditUserId,log.audit_result as auditResult,
+        log.audit_alarm_code_id as auditAlarmCodeId,log.audit_alarm_level as auditAlarmLevel,log.audit_memo as auditMemo,
+        log.weather_temp as weatherTemp,log.weather_hum as weatherHum,
+        log.weather_rain_fall as weatherRainFall,log.weather_wind_speed as weatherWindSpeed
+        from ptz_set ptz ,task_exec exec,task_plan plan,task_log log,regz_spot regz
+        where ptz.site_id=#{siteId} and exec.site_id=#{siteId} and log.site_id=#{siteId}
+        and ptz.uid=exec.ptz_set_id  and exec.task_plan_id=plan.uid
+        and log.task_exec_id=exec.uid and ptz.regz_spot_id=regz.uid
+        and exec.status in (2,7)
+        and ptz.uid=#{ptzSetId}
+        -->
+        select t1.* ,t2.uid as alarm_uid,t2.time , t2.status ,t2.alarm_code_id ,t2.alarm_level ,
+        t2.audit_alarm_code_id ,t2.audit_alarm_level ,t2.is_new_alarm
+        from
+        (
+        select log.*,exec.task_plan_id
+        from task_exec exec,task_log log
+        where log.ptz_set_id=#{ptzSetId} and log.task_exec_id=exec.uid
+        <if test="fromDate != null" >
+            and log.begin_time &gt;= #{fromDate}
+        </if>
+        <if test="toDate != null" >
+            and log.begin_time &lt; #{toDate}
+        </if>
+        ) t1
+        left join alarm_log t2 on  t1.uid=t2.log_id
+        order by t1.begin_time desc
+    </select>
+</mapper>

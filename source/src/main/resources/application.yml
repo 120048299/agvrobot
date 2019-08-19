@@ -1,0 +1,60 @@
+
+server:
+  port: 8080
+
+spring:
+  datasource:
+    name: test
+    url: jdbc:mysql://localhost:3306/ros2?useUnicode=true&characterEncoding=utf8
+    username: ros
+    password: ros
+#    url: jdbc:mysql://10.204.157.232:3306/ros?useUnicode=true&characterEncoding=utf8
+#    username: ros
+#    password: ros
+    driver-class-name: com.mysql.jdbc.Driver
+
+
+
+#  thymeleaf:
+#    encoding: UTF-8
+#    cache: false
+#    prefix: classpath:/templates/
+#    suffix: .html
+#    mode: LEGACYHTML5
+#    content-type: text/html
+#  messages:
+#    basename: Messages
+
+
+mybatis:
+  mapper-locations: classpath:mapping/**/*.xml
+  type-aliases-package: com.wootion.model
+  configuration:
+    call-setters-on-nulls: true
+    #log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+
+pagehelper:
+    helperDialect: mysql
+    reasonable: true
+    supportMethodsArguments: true
+    params: count=countSql
+    offset-as-page-num: true
+    row-bounds-with-count: true
+
+ros:
+  #主服务器，启动后台任务线程，控制任务
+  isMainServer: 1
+  #缓存有效期，单位秒
+  dataCacheTime: 60
+
+#异物检测
+foreignDetect:
+  #有异物图片路径
+  existPath: 有异物
+  #无异物图片路径
+  nonePath: 无异物
+
+logging:
+  level: debug
+

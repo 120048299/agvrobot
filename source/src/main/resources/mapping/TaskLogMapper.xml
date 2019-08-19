@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="TaskLog">
+  <resultMap id="BaseResultMap" type="com.wootion.model.TaskLog">
+    <id column="uid" jdbcType="VARCHAR" property="uid" />
+    <result column="task_exec_id" jdbcType="VARCHAR" property="taskExecId" />
+    <result column="img_file" jdbcType="VARCHAR" property="imgFile" />
+    <result column="ptz_set_id" jdbcType="VARCHAR" property="ptzSetId" />
+    <result column="regz_spot_id" jdbcType="VARCHAR" property="regzSpotId" />
+    <result column="regz_object_id" jdbcType="VARCHAR" property="regzObjectId" />
+    <result column="dev_id" jdbcType="VARCHAR" property="devId" />
+    <result column="infrared_file" jdbcType="VARCHAR" property="infraredFile" />
+    <result column="audio_file" jdbcType="VARCHAR" property="audioFile" />
+    <result column="video_file" jdbcType="VARCHAR" property="videoFile" />
+    <result column="foreign_file" jdbcType="VARCHAR" property="foreignFile" />
+    <result column="robot_id" jdbcType="VARCHAR" property="robotId" />
+    <result column="begin_time" jdbcType="TIMESTAMP" property="beginTime" />
+    <result column="finish_time" jdbcType="TIMESTAMP" property="finishTime" />
+    <result column="weather_temp" jdbcType="REAL" property="weatherTemp" />
+    <result column="weather_hum" jdbcType="REAL" property="weatherHum" />
+    <result column="weather_rain_fall" jdbcType="REAL" property="weatherRainFall" />
+    <result column="weather_wind_speed" jdbcType="REAL" property="weatherWindSpeed" />
+    <result column="audit_status" jdbcType="INTEGER" property="auditStatus" />
+    <result column="audit_regz_error" jdbcType="INTEGER" property="auditRegzError" />
+    <result column="audit_regz_abnormal" jdbcType="INTEGER" property="auditRegzAbnormal" />
+    <result column="audit_regz_abnormal_id" jdbcType="VARCHAR" property="auditRegzAbnormalId" />
+    <result column="audit_time" jdbcType="TIMESTAMP" property="auditTime" />
+    <result column="audit_user_id" jdbcType="VARCHAR" property="auditUserId" />
+    <result column="audit_memo" jdbcType="VARCHAR" property="auditMemo" />
+    <result column="site_id" jdbcType="VARCHAR" property="siteId" />
+    <result column="exec_fail_reason" jdbcType="INTEGER" property="execFailReason" />
+    <result column="exec_fail_memo" jdbcType="VARCHAR" property="execFailMemo" />
+    <result column="audit_alarm_level" jdbcType="INTEGER" property="auditAlarmLevel" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    uid, task_exec_id, img_file, ptz_set_id, regz_spot_id, regz_object_id, dev_id, infrared_file, 
+    audio_file, video_file, foreign_file, robot_id, begin_time, finish_time, weather_temp, 
+    weather_hum, weather_rain_fall, weather_wind_speed, audit_status, audit_regz_error, 
+    audit_regz_abnormal, audit_regz_abnormal_id, audit_time, audit_user_id, audit_memo, 
+    site_id, exec_fail_reason, exec_fail_memo, audit_alarm_level
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from task_log
+    where uid = #{uid,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from task_log
+    where uid = #{uid,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.wootion.model.TaskLog">
+    <selectKey keyProperty="uid" order="BEFORE" resultType="java.lang.String">
+      select replace(uuid(), '-', '')
+    </selectKey>
+    insert into task_log (uid, task_exec_id, img_file, 
+      ptz_set_id, regz_spot_id, regz_object_id, 
+      dev_id, infrared_file, audio_file, 
+      video_file, foreign_file, robot_id, 
+      begin_time, finish_time, weather_temp, 
+      weather_hum, weather_rain_fall, weather_wind_speed, 
+      audit_status, audit_regz_error, audit_regz_abnormal, 
+      audit_regz_abnormal_id, audit_time, audit_user_id, 
+      audit_memo, site_id, exec_fail_reason, 
+      exec_fail_memo, audit_alarm_level)
+    values (#{uid,jdbcType=VARCHAR}, #{taskExecId,jdbcType=VARCHAR}, #{imgFile,jdbcType=VARCHAR}, 
+      #{ptzSetId,jdbcType=VARCHAR}, #{regzSpotId,jdbcType=VARCHAR}, #{regzObjectId,jdbcType=VARCHAR}, 
+      #{devId,jdbcType=VARCHAR}, #{infraredFile,jdbcType=VARCHAR}, #{audioFile,jdbcType=VARCHAR}, 
+      #{videoFile,jdbcType=VARCHAR}, #{foreignFile,jdbcType=VARCHAR}, #{robotId,jdbcType=VARCHAR}, 
+      #{beginTime,jdbcType=TIMESTAMP}, #{finishTime,jdbcType=TIMESTAMP}, #{weatherTemp,jdbcType=REAL}, 
+      #{weatherHum,jdbcType=REAL}, #{weatherRainFall,jdbcType=REAL}, #{weatherWindSpeed,jdbcType=REAL}, 
+      #{auditStatus,jdbcType=INTEGER}, #{auditRegzError,jdbcType=INTEGER}, #{auditRegzAbnormal,jdbcType=INTEGER}, 
+      #{auditRegzAbnormalId,jdbcType=VARCHAR}, #{auditTime,jdbcType=TIMESTAMP}, #{auditUserId,jdbcType=VARCHAR}, 
+      #{auditMemo,jdbcType=VARCHAR}, #{siteId,jdbcType=VARCHAR}, #{execFailReason,jdbcType=INTEGER}, 
+      #{execFailMemo,jdbcType=VARCHAR}, #{auditAlarmLevel,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.wootion.model.TaskLog">
+    <selectKey keyProperty="uid" order="BEFORE" resultType="java.lang.String">
+      select replace(uuid(), '-', '')
+    </selectKey>
+    insert into task_log
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      uid,
+      <if test="taskExecId != null">
+        task_exec_id,
+      </if>
+      <if test="imgFile != null">
+        img_file,
+      </if>
+      <if test="ptzSetId != null">
+        ptz_set_id,
+      </if>
+      <if test="regzSpotId != null">
+        regz_spot_id,
+      </if>
+      <if test="regzObjectId != null">
+        regz_object_id,
+      </if>
+      <if test="devId != null">
+        dev_id,
+      </if>
+      <if test="infraredFile != null">
+        infrared_file,
+      </if>
+      <if test="audioFile != null">
+        audio_file,
+      </if>
+      <if test="videoFile != null">
+        video_file,
+      </if>
+      <if test="foreignFile != null">
+        foreign_file,
+      </if>
+      <if test="robotId != null">
+        robot_id,
+      </if>
+      <if test="beginTime != null">
+        begin_time,
+      </if>
+      <if test="finishTime != null">
+        finish_time,
+      </if>
+      <if test="weatherTemp != null">
+        weather_temp,
+      </if>
+      <if test="weatherHum != null">
+        weather_hum,
+      </if>
+      <if test="weatherRainFall != null">
+        weather_rain_fall,
+      </if>
+      <if test="weatherWindSpeed != null">
+        weather_wind_speed,
+      </if>
+      <if test="auditStatus != null">
+        audit_status,
+      </if>
+      <if test="auditRegzError != null">
+        audit_regz_error,
+      </if>
+      <if test="auditRegzAbnormal != null">
+        audit_regz_abnormal,
+      </if>
+      <if test="auditRegzAbnormalId != null">
+        audit_regz_abnormal_id,
+      </if>
+      <if test="auditTime != null">
+        audit_time,
+      </if>
+      <if test="auditUserId != null">
+        audit_user_id,
+      </if>
+      <if test="auditMemo != null">
+        audit_memo,
+      </if>
+      <if test="siteId != null">
+        site_id,
+      </if>
+      <if test="execFailReason != null">
+        exec_fail_reason,
+      </if>
+      <if test="execFailMemo != null">
+        exec_fail_memo,
+      </if>
+      <if test="auditAlarmLevel != null">
+        audit_alarm_level,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      #{uid,jdbcType=VARCHAR},
+      <if test="taskExecId != null">
+        #{taskExecId,jdbcType=VARCHAR},
+      </if>
+      <if test="imgFile != null">
+        #{imgFile,jdbcType=VARCHAR},
+      </if>
+      <if test="ptzSetId != null">
+        #{ptzSetId,jdbcType=VARCHAR},
+      </if>
+      <if test="regzSpotId != null">
+        #{regzSpotId,jdbcType=VARCHAR},
+      </if>
+      <if test="regzObjectId != null">
+        #{regzObjectId,jdbcType=VARCHAR},
+      </if>
+      <if test="devId != null">
+        #{devId,jdbcType=VARCHAR},
+      </if>
+      <if test="infraredFile != null">
+        #{infraredFile,jdbcType=VARCHAR},
+      </if>
+      <if test="audioFile != null">
+        #{audioFile,jdbcType=VARCHAR},
+      </if>
+      <if test="videoFile != null">
+        #{videoFile,jdbcType=VARCHAR},
+      </if>
+      <if test="foreignFile != null">
+        #{foreignFile,jdbcType=VARCHAR},
+      </if>
+      <if test="robotId != null">
+        #{robotId,jdbcType=VARCHAR},
+      </if>
+      <if test="beginTime != null">
+        #{beginTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="finishTime != null">
+        #{finishTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="weatherTemp != null">
+        #{weatherTemp,jdbcType=REAL},
+      </if>
+      <if test="weatherHum != null">
+        #{weatherHum,jdbcType=REAL},
+      </if>
+      <if test="weatherRainFall != null">
+        #{weatherRainFall,jdbcType=REAL},
+      </if>
+      <if test="weatherWindSpeed != null">
+        #{weatherWindSpeed,jdbcType=REAL},
+      </if>
+      <if test="auditStatus != null">
+        #{auditStatus,jdbcType=INTEGER},
+      </if>
+      <if test="auditRegzError != null">
+        #{auditRegzError,jdbcType=INTEGER},
+      </if>
+      <if test="auditRegzAbnormal != null">
+        #{auditRegzAbnormal,jdbcType=INTEGER},
+      </if>
+      <if test="auditRegzAbnormalId != null">
+        #{auditRegzAbnormalId,jdbcType=VARCHAR},
+      </if>
+      <if test="auditTime != null">
+        #{auditTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="auditUserId != null">
+        #{auditUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="auditMemo != null">
+        #{auditMemo,jdbcType=VARCHAR},
+      </if>
+      <if test="siteId != null">
+        #{siteId,jdbcType=VARCHAR},
+      </if>
+      <if test="execFailReason != null">
+        #{execFailReason,jdbcType=INTEGER},
+      </if>
+      <if test="execFailMemo != null">
+        #{execFailMemo,jdbcType=VARCHAR},
+      </if>
+      <if test="auditAlarmLevel != null">
+        #{auditAlarmLevel,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wootion.model.TaskLog">
+    update task_log
+    <set>
+      <if test="taskExecId != null">
+        task_exec_id = #{taskExecId,jdbcType=VARCHAR},
+      </if>
+      <if test="imgFile != null">
+        img_file = #{imgFile,jdbcType=VARCHAR},
+      </if>
+      <if test="ptzSetId != null">
+        ptz_set_id = #{ptzSetId,jdbcType=VARCHAR},
+      </if>
+      <if test="regzSpotId != null">
+        regz_spot_id = #{regzSpotId,jdbcType=VARCHAR},
+      </if>
+      <if test="regzObjectId != null">
+        regz_object_id = #{regzObjectId,jdbcType=VARCHAR},
+      </if>
+      <if test="devId != null">
+        dev_id = #{devId,jdbcType=VARCHAR},
+      </if>
+      <if test="infraredFile != null">
+        infrared_file = #{infraredFile,jdbcType=VARCHAR},
+      </if>
+      <if test="audioFile != null">
+        audio_file = #{audioFile,jdbcType=VARCHAR},
+      </if>
+      <if test="videoFile != null">
+        video_file = #{videoFile,jdbcType=VARCHAR},
+      </if>
+      <if test="foreignFile != null">
+        foreign_file = #{foreignFile,jdbcType=VARCHAR},
+      </if>
+      <if test="robotId != null">
+        robot_id = #{robotId,jdbcType=VARCHAR},
+      </if>
+      <if test="beginTime != null">
+        begin_time = #{beginTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="finishTime != null">
+        finish_time = #{finishTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="weatherTemp != null">
+        weather_temp = #{weatherTemp,jdbcType=REAL},
+      </if>
+      <if test="weatherHum != null">
+        weather_hum = #{weatherHum,jdbcType=REAL},
+      </if>
+      <if test="weatherRainFall != null">
+        weather_rain_fall = #{weatherRainFall,jdbcType=REAL},
+      </if>
+      <if test="weatherWindSpeed != null">
+        weather_wind_speed = #{weatherWindSpeed,jdbcType=REAL},
+      </if>
+      <if test="auditStatus != null">
+        audit_status = #{auditStatus,jdbcType=INTEGER},
+      </if>
+      <if test="auditRegzError != null">
+        audit_regz_error = #{auditRegzError,jdbcType=INTEGER},
+      </if>
+      <if test="auditRegzAbnormal != null">
+        audit_regz_abnormal = #{auditRegzAbnormal,jdbcType=INTEGER},
+      </if>
+      <if test="auditRegzAbnormalId != null">
+        audit_regz_abnormal_id = #{auditRegzAbnormalId,jdbcType=VARCHAR},
+      </if>
+      <if test="auditTime != null">
+        audit_time = #{auditTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="auditUserId != null">
+        audit_user_id = #{auditUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="auditMemo != null">
+        audit_memo = #{auditMemo,jdbcType=VARCHAR},
+      </if>
+      <if test="siteId != null">
+        site_id = #{siteId,jdbcType=VARCHAR},
+      </if>
+      <if test="execFailReason != null">
+        exec_fail_reason = #{execFailReason,jdbcType=INTEGER},
+      </if>
+      <if test="execFailMemo != null">
+        exec_fail_memo = #{execFailMemo,jdbcType=VARCHAR},
+      </if>
+      <if test="auditAlarmLevel != null">
+        audit_alarm_level = #{auditAlarmLevel,jdbcType=INTEGER},
+      </if>
+    </set>
+    where uid = #{uid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wootion.model.TaskLog">
+    update task_log
+    set task_exec_id = #{taskExecId,jdbcType=VARCHAR},
+      img_file = #{imgFile,jdbcType=VARCHAR},
+      ptz_set_id = #{ptzSetId,jdbcType=VARCHAR},
+      regz_spot_id = #{regzSpotId,jdbcType=VARCHAR},
+      regz_object_id = #{regzObjectId,jdbcType=VARCHAR},
+      dev_id = #{devId,jdbcType=VARCHAR},
+      infrared_file = #{infraredFile,jdbcType=VARCHAR},
+      audio_file = #{audioFile,jdbcType=VARCHAR},
+      video_file = #{videoFile,jdbcType=VARCHAR},
+      foreign_file = #{foreignFile,jdbcType=VARCHAR},
+      robot_id = #{robotId,jdbcType=VARCHAR},
+      begin_time = #{beginTime,jdbcType=TIMESTAMP},
+      finish_time = #{finishTime,jdbcType=TIMESTAMP},
+      weather_temp = #{weatherTemp,jdbcType=REAL},
+      weather_hum = #{weatherHum,jdbcType=REAL},
+      weather_rain_fall = #{weatherRainFall,jdbcType=REAL},
+      weather_wind_speed = #{weatherWindSpeed,jdbcType=REAL},
+      audit_status = #{auditStatus,jdbcType=INTEGER},
+      audit_regz_error = #{auditRegzError,jdbcType=INTEGER},
+      audit_regz_abnormal = #{auditRegzAbnormal,jdbcType=INTEGER},
+      audit_regz_abnormal_id = #{auditRegzAbnormalId,jdbcType=VARCHAR},
+      audit_time = #{auditTime,jdbcType=TIMESTAMP},
+      audit_user_id = #{auditUserId,jdbcType=VARCHAR},
+      audit_memo = #{auditMemo,jdbcType=VARCHAR},
+      site_id = #{siteId,jdbcType=VARCHAR},
+      exec_fail_reason = #{execFailReason,jdbcType=INTEGER},
+      exec_fail_memo = #{execFailMemo,jdbcType=VARCHAR},
+      audit_alarm_level = #{auditAlarmLevel,jdbcType=INTEGER}
+    where uid = #{uid,jdbcType=VARCHAR}
+  </update>
+
+</mapper>
