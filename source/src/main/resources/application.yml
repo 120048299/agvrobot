@@ -5,9 +5,9 @@ server:
 spring:
   datasource:
     name: test
-    url: jdbc:mysql://localhost:3306/ros?useUnicode=true&characterEncoding=utf8
-    username: root
-    password: 123456
+    url: jdbc:mysql://localhost:3306/ros2?useUnicode=true&characterEncoding=utf8
+    username: ros
+    password: ros
 #    url: jdbc:mysql://10.204.157.232:3306/ros?useUnicode=true&characterEncoding=utf8
 #    username: ros
 #    password: ros
